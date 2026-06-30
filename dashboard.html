@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表盘</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        nav {
+            background-color: #3498db;
+            color: #fff;
+            padding: 8px 16px;
+            text-align: center;
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline-block;
+            margin-right: 16px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 16px;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+            }
+            nav ul li {
+                display: block;
+                margin-right: 0;
+                padding: 8px 0;
+            }
+        }
+    </style>
+<meta name="description" content="管理协作板和账户"><meta name="keywords" content="涂鸦,协作,实时,模板,历史记录"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="仪表盘"><meta property="og:description" content="管理协作板和账户"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="仪表盘"><meta name="twitter:description" content="管理协作板和账户"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"仪表盘","description":"管理协作板和账户","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="dashboard.html">仪表盘</a></li>
+            <li><a href="board.html">协作板</a></li>
+            <li><a href="template.html">协作模板</a></li>
+            <li><a href="history.html">历史记录</a></li>
+            <li><a href="profile.html">用户资料</a></li>
+            <li><a href="about.html">关于</a></li>
+            <li><a href="login.html">登录</a></li>
+        </ul>
+    </nav>
+    <header>
+        <h1>实时涂鸦协作板</h1>
+    </header>
+    <div class="container">
+        
+<section style="margin-bottom: 16px;"><h2 style="margin-top: 0;">账户信息</h2><div id="userInfo"></div><div id="authButtons" style="margin-top: 8px;"></div></section>
+
+<section style="margin-bottom: 16px;"><h2 style="margin-top: 0;">我的协作板</h2>
+<div style="margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+<input type="text" id="newBoardName" placeholder="输入新协作板名称" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+<button id="createBoardBtn" style="background-color: #3498db; color: #fff; border: none; padding: 8px 16px; font-size: 16px; border-radius: 8px; cursor: pointer;">创建新协作板</button>
+</div>
+<table style="width: 100%; border-collapse: collapse;">
+<thead><tr><th style="border: 1px solid #ddd; padding: 8px; text-align: left;">名称</th><th style="border: 1px solid #ddd; padding: 8px; text-align: left;">ID</th><th style="border: 1px solid #ddd; padding: 8px; text-align: left;">操作</th></tr></thead>
+<tbody id="boardTableBody"></tbody>
+</table>
+<div id="emptyBoards" style="text-align: center; padding: 16px; display: none;"><p>暂无协作板，请点击上方按钮创建</p></div>
+</section>
+
+<section style="margin-bottom: 16px;"><h2 style="margin-top: 0;">协作活跃度</h2>
+<article class="card" style="background-color: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1);">
+<canvas id="activityChart" width="800" height="200" style="width: 100%; height: auto;"></canvas>
+</article>
+</section>
+
+<script>
+(function() {
+    const USER_KEY = 'a2a_dash_user';
+    const BOARDS_KEY = 'a2a_dash_boards';
+
+    function getUser() { return JSON.parse(localStorage.getItem(USER_KEY) || 'null'); }
+    function setUser(u) { localStorage.setItem(USER_KEY, JSON.stringify(u)); }
+    function clearUser() { localStorage.removeItem(USER_KEY); }
+
+    function getBoards() { return JSON.parse(localStorage.getItem(BOARDS_KEY) || '[]'); }
+    function saveBoards(boards) { localStorage.setItem(BOARDS_KEY, JSON.stringify(boards)); }
+
+    function genId() { return 'b_' + Math.random().toString(36).substring(2, 10); }
+
+    function renderUser() {
+        const infoDiv = document.getElementById('userInfo');
+        const btnDiv = document.getElementById('authButtons');
+        const user = getUser();
+        btnDiv.innerHTML = '';
+        
+        if (user) {
+            infoDiv.textContent = '已登录：' + user.name + ' (' + user.email + ')';
+            const logoutBtn = document.createElement('button');
+            logoutBtn.textContent = '退出登录';
+            logoutBtn.style.cssText = 'background-color: #e74c3c; color: #fff; border: none; padding: 8px 16px; font-size: 16px; border-radius: 8px; cursor: pointer; margin-right: 8px;';
+            logoutBtn.onclick = function() { clearUser(); renderUser(); };
+            btnDiv.appendChild(logoutBtn);
+
+            const profileBtn = document.createElement('a');
+            profileBtn.href = 'profile.html?id=' + user.id;
+            profileBtn.textContent = '前往资料页';
+            profileBtn.style.cssText = 'background-color: #3498db; color: #fff; border: none; padding: 8px 16px; font-size: 16px; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block;';
+            btnDiv.appendChild(profileBtn);
+        } else {
+            infoDiv.textContent = '未登录';
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.placeholder = '输入昵称';
+            nameInput.id = 'loginName';
+            nameInput.style.cssText = 'padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; margin-right: 8px;';
+            btnDiv.appendChild(nameInput);
+
+            const loginBtn = document.createElement('button');
+            loginBtn.textContent = '登录/注册';
+            loginBtn.style.cssText = 'background-color: #3498db; color: #fff; border: none; padding: 8px 16px; font-size: 16px; border-radius: 8px; cursor: pointer;';
+            loginBtn.onclick = function() {
+                var name = document.getElementById('loginName').value.trim();
+                if (!name) name = '匿名用户';
+                setUser({ id: 'u_' + Date.now(), name: name, email: name.toLowerCase() + '@example.com' });
+                renderUser();
+            };
+            btnDiv.appendChild(loginBtn);
+        }
+    }
+
+    function renderBoards() {
+        var boards = getBoards();
+        var tbody = document.getElementById('boardTableBody');
+        var emptyDiv = document.getElementById('emptyBoards');
+        tbody.innerHTML = '';
+
+        if (boards.length === 0) {
+            emptyDiv.style.display = 'block';
+        } else {
+            emptyDiv.style.display = 'none';
+            boards.forEach(function(board) {
+                var tr = document.createElement('tr');
+                
+                var tdName = document.createElement('td');
+                tdName.style.cssText = 'border: 1px solid #ddd; padding: 8px;';
+                tdName.textContent = board.name;
+                
+                var tdId = document.createElement('td');
+                tdId.style.cssText = 'border: 1px solid #ddd; padding: 8px; font-family: monospace; font-size: 14px;';
+                tdId.textContent = board.id;
+                
+                var tdAction = document.createElement('td');
+                tdAction.style.cssText = 'border: 1px solid #ddd; padding: 8px;';
+                
+                var openLink = document.createElement('a');
+                openLink.href = 'board.html?id=' + board.id;
+                openLink.textContent = '打开协作';
+                openLink.style.cssText = 'background-color: #2ecc71; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 8px; font-size: 14px; margin-right: 4px;';
+                
+                var histLink = document.createElement('a');
+                histLink.href = 'history.html?id=' + board.id;
+                histLink.textContent = '查看历史';
+                histLink.style.cssText = 'background-color: #f39c12; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 8px; font-size: 14px; margin-right: 4px;';
+
+                var delBtn = document.createElement('button');
+                delBtn.textContent = '删除';
+                delBtn.style.cssText = 'background-color: #e74c3c; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 14px; cursor: pointer;';
+                delBtn.onclick = function() {
+                    var b = getBoards().filter(function(item){ return item.id !== board.id; });
+                    saveBoards(b);
+                    renderBoards();
+                    drawChart();
+                };
+
+                tdAction.appendChild(openLink);
+                tdAction.appendChild(histLink);
+                tdAction.appendChild(delBtn);
+                
+                tr.appendChild(tdName);
+                tr.appendChild(tdId);
+                tr.appendChild(tdAction);
+                tbody.appendChild(tr);
+            });
+        }
+    }
+
+    document.getElementById('createBoardBtn').onclick = function() {
+        var nameInput = document.getElementById('newBoardName');
+        var name = nameInput.value.trim();
+        if (!name) name = '未命名协作板';
+        var boards = getBoards();
+        var newBoard = { id: genId(), name: name, created: Date.now() };
+        boards.push(newBoard);
+        saveBoards(boards);
+        nameInput.value = '';
+        renderBoards();
+        drawChart();
+    };
+
+    function drawChart() {
+        var canvas = document.getElementById('activityChart');
+        if (!canvas || !canvas.getContext) return;
+        var ctx = canvas.getContext('2d');
+        var w = canvas.width;
+        var h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        var boards = getBoards();
+        var data = [];
+        for (var i = 6; i >= 0; i--) {
+            var d = new Date();
+            d.setDate(d.getDate() - i);
+            var ds = d.toISOString().split('T')[0];
+            var count = 0;
+            boards.forEach(function(b) {
+                var bd = new Date(b.created).toISOString().split('T')[0];
+                if (bd === ds) count++;
+            });
+            data.push({ label: (d.getMonth()+1) + '/' + d.getDate(), value: count });
+        }
+
+        var maxVal = Math.max(1, Math.max.apply(null, data.map(function(d){return d.value;})));
+        var padding = 40;
+        var chartW = w - padding * 2;
+        var chartH = h - padding * 2;
+
+        ctx.strokeStyle = '#ddd';
+        ctx.lineWidth = 1;
+        for (var j = 0; j <= 4; j++) {
+            var yLine = padding + chartH - (chartH * j / 4);
+            ctx.beginPath();
+            ctx.moveTo(padding, yLine);
+            ctx.lineTo(w - padding, yLine);
+            ctx.stroke();
+            ctx.fillStyle = '#999';
+            ctx.font = '12px Open Sans, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText(Math.round(maxVal * j / 4), padding - 8, yLine + 4);
+        }
+
+        ctx.strokeStyle = '#3498db';
+        ctx.lineWidth = 3;
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        data.forEach(function(d, idx) {
+            var x = padding + (chartW / (data.length - 1)) * idx;
+            var y = padding + chartH - (d.value / maxVal) * chartH;
+            if (idx === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        ctx.fillStyle = '#3498db';
+        data.forEach(function(d, idx) {
+            var x = padding + (chartW / (data.length - 1)) * idx;
+            var y = padding + chartH - (d.value / maxVal) * chartH;
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#333';
+            ctx.font = '12px Open Sans, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(d.label, x, h - 10);
+            ctx.fillStyle = '#3498db';
+        });
+    }
+
+    renderUser();
+    renderBoards();
+    drawChart();
+})();
+</script>
+
+    </div>
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
