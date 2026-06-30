@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        nav {
+            background-color: #3498db;
+            color: #fff;
+            padding: 8px 16px;
+            text-align: center;
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline-block;
+            margin-right: 16px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 16px;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+            }
+            nav ul li {
+                display: block;
+                margin-right: 0;
+                padding: 8px 0;
+            }
+        }
+    </style>
+<meta name="description" content="用户登录"><meta name="keywords" content="涂鸦,协作,实时,模板,历史记录"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="登录"><meta property="og:description" content="用户登录"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="登录"><meta name="twitter:description" content="用户登录"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"登录","description":"用户登录","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="dashboard.html">仪表盘</a></li>
+            <li><a href="board.html">协作板</a></li>
+            <li><a href="template.html">协作模板</a></li>
+            <li><a href="history.html">历史记录</a></li>
+            <li><a href="profile.html">用户资料</a></li>
+            <li><a href="about.html">关于</a></li>
+            <li><a href="login.html">登录</a></li>
+        </ul>
+    </nav>
+    <header>
+        <h1>实时涂鸦协作板</h1>
+    </header>
+    <div class="container">
+        
+<h2>登录</h2>
+<form id="loginForm">
+  <label for="loginUsername">用户名或邮箱</label><br>
+  <input type="text" id="loginUsername" placeholder="输入用户名或邮箱" autocomplete="username"><br><br>
+  <label for="loginPassword">密码</label><br>
+  <input type="password" id="loginPassword" placeholder="输入密码" autocomplete="current-password"><br><br>
+  <button type="submit">登录</button>
+</form>
+<div id="loginMessage"></div>
+<p>还没有账号？<a href="register.html?id=signup">去注册</a></p>
+
+<script>
+(() => {
+  const form = document.getElementById('loginForm');
+  const message = document.getElementById('loginMessage');
+
+  function getUsers() {
+    const data = localStorage.getItem('users');
+    return data ? JSON.parse(data) : [];
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const username = form.loginUsername.value.trim();
+    const password = form.loginPassword.value;
+    if (!username || !password) {
+      message.textContent = '请填写完整信息';
+      message.style.color = '#d93025';
+      return;
+    }
+    const users = getUsers();
+    const user = users.find(u =>
+      (u.username === username || u.email === username) && u.password === password
+    );
+    if (user) {
+      message.textContent = '登录成功，正在跳转...';
+      message.style.color = '#1e8e3e';
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      // 跳转到首页（实际使用中可改为 board.html 或 dashboard.html）
+      setTimeout(() => { location.href = 'index.html'; }, 800);
+    } else {
+      message.textContent = '用户名或密码错误';
+      message.style.color = '#d93025';
+    }
+  });
+})();
+</script>
+
+    </div>
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
