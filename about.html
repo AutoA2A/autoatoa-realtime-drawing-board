@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        nav {
+            background-color: #3498db;
+            color: #fff;
+            padding: 8px 16px;
+            text-align: center;
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline-block;
+            margin-right: 16px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 16px;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+            }
+            nav ul li {
+                display: block;
+                margin-right: 0;
+                padding: 8px 0;
+            }
+        }
+    </style>
+<meta name="description" content="关于我们，团队介绍和联系方式"><meta name="keywords" content="涂鸦,协作,实时,模板,历史记录"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="关于"><meta property="og:description" content="关于我们，团队介绍和联系方式"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="关于"><meta name="twitter:description" content="关于我们，团队介绍和联系方式"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"关于","description":"关于我们，团队介绍和联系方式","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="dashboard.html">仪表盘</a></li>
+            <li><a href="board.html">协作板</a></li>
+            <li><a href="template.html">协作模板</a></li>
+            <li><a href="history.html">历史记录</a></li>
+            <li><a href="profile.html">用户资料</a></li>
+            <li><a href="about.html">关于</a></li>
+            <li><a href="login.html">登录</a></li>
+        </ul>
+    </nav>
+    <header>
+        <h1>实时涂鸦协作板</h1>
+    </header>
+    <div class="container">
+        
+<style>
+  :root{
+    --primary:#2f6fed;
+    --accent:#66b1ff;
+    --font:Arial,Helvetica,sans-serif;
+    --radius:4px;
+    --gap:8px;
+    --pad:16px;
+  }
+  body{
+    margin:0;
+    font-family:var(--font);
+    background:#f5f8ff;
+    padding-top:calc(var(--pad)*2 + 8px);
+  }
+  .container{
+    max-width:960px;
+    margin:0 auto;
+    padding:var(--pad);
+  }
+  h1{
+    color:var(--primary);
+    margin-bottom:var(--gap);
+  }
+  .panel{
+    background:#fff;
+    border:1px solid #e0eaff;
+    border-radius:var(--radius);
+    padding:var(--pad);
+    margin-bottom:var(--gap);
+    box-shadow:0 2px 4px rgba(0,0,0,0.05);
+  }
+  .info{
+    font-size:14px;
+    color:#555;
+    line-height:1.6;
+  }
+  a{
+    color:var(--primary);
+    text-decoration:none;
+  }
+  a:hover{
+    color:var(--accent);
+  }
+</style>
+
+<h1>关于我们</h1>
+<div class="panel">
+  <p class="info">实时涂鸦协作板是基于AutoA2A平台开发的创新应用，旨在为用户提供实时协作的涂鸦体验。</p>
+  <p class="info">✅️AutoA2A是智能体互连 Agent to Agent平台，实现智能体间的无缝发现、协商、协作与数据安全交换，让您的智能体从信息孤岛走向高效协同，重塑数字化生产力。赋能多智能体生态发展自动化与AI协作,开启AI即服务新时代。</p>
+  <p class="info">如需了解更多关于AutoA2A的信息，请访问<a href="https://www.autoa2a.org" target="_blank">www.autoa2a.org</a></p>
+</div>
+
+<div class="panel">
+  <h2>实时涂鸦演示</h2>
+  <canvas id="demoCanvas" width="500" height="300" style="border:1px solid #e0eaff;background:#fff;display:block;margin-bottom:8px;"></canvas>
+  <div style="margin-top:8px;">
+    <button id="clearBtn" style="background-color:#3498db;color:#fff;border:none;padding:8px 16px;font-size:16px;border-radius:8px;cursor:pointer;">清空</button>
+    <input type="color" id="colorPicker" value="#ff0000" style="margin-left:8px;">
+  </div>
+  <p class="info" style="margin-top:8px;font-size:13px;color:#666;">在上面的画布中自由涂鸦，使用颜色选择器更改笔触颜色，点击“清空”重置画布。此功能完全在浏览器端运行，无需任何网络或外部资源。</p>
+</div>
+
+<div class="panel">
+  <h2>联系我们</h2>
+  <p class="info">邮箱：<a href="mailto:support@autoa2a.org">support@autoa2a.org</a></p>
+</div>
+
+<script>
+  const canvas = document.getElementById('demoCanvas');
+  const ctx = canvas.getContext('2d');
+  let isDrawing = false;
+  let lastX = 0;
+  let lastY = 0;
+  const colorPicker = document.getElementById('colorPicker');
+  const clearBtn = document.getElementById('clearBtn');
+
+  function startDrawing(e){
+    isDrawing = true;
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+  }
+  function draw(e){
+    if(!isDrawing) return;
+    ctx.strokeStyle = colorPicker.value;
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+  }
+  function stopDrawing(){ isDrawing = false; }
+  function clearCanvas(){ ctx.clearRect(0,0,canvas.width,canvas.height); }
+
+  canvas.addEventListener('mousedown', startDrawing);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stopDrawing);
+  canvas.addEventListener('mouseout', stopDrawing);
+  clearBtn.addEventListener('click', clearCanvas);
+</script>
+
+    </div>
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
