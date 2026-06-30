@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>协作板</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        nav {
+            background-color: #3498db;
+            color: #fff;
+            padding: 8px 16px;
+            text-align: center;
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline-block;
+            margin-right: 16px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 16px;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+            }
+            nav ul li {
+                display: block;
+                margin-right: 0;
+                padding: 8px 0;
+            }
+        }
+    </style>
+<meta name="description" content="实时涂鸦协作"><meta name="keywords" content="涂鸦,协作,实时,模板,历史记录"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="协作板"><meta property="og:description" content="实时涂鸦协作"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="协作板"><meta name="twitter:description" content="实时涂鸦协作"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"协作板","description":"实时涂鸦协作","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="dashboard.html">仪表盘</a></li>
+            <li><a href="board.html">协作板</a></li>
+            <li><a href="template.html">协作模板</a></li>
+            <li><a href="history.html">历史记录</a></li>
+            <li><a href="profile.html">用户资料</a></li>
+            <li><a href="about.html">关于</a></li>
+            <li><a href="login.html">登录</a></li>
+        </ul>
+    </nav>
+    <header>
+        <h1>实时涂鸦协作板</h1>
+    </header>
+    <div class="container">
+        
+<section style="margin-bottom: 16px;">
+    <h2 style="margin-top: 0;">实时涂鸦协作</h2>
+    <article class="card" style="background-color: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1);">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px;">
+            <button data-tool="brush" class="tool-btn active" style="background-color: #3498db; color: #fff; border: none; padding: 8px 16px; font-size: 16px; border-radius: 8px; cursor: pointer;">画笔</button>
+            <button data-tool="eraser" class="tool-btn" style="background-color: #3498db; color: #fff; border: none; padding: 8px 16px; font-size: 16px; border-radius: 8px; cursor: pointer;">橡皮</button>
+            <input type="color" id="colorPicker" value="#000000" title="选择颜色" style="border: none; width: 36px; height: 36px; cursor: pointer; padding: 0; background: none;">
+            <input type="range" id="sizePicker" min="1" max="30" value="4" title="画笔粗细" style="cursor: pointer;">
+            <button id="clearBtn" style="background-color: #e74c3c; color: #fff; border: none; padding: 8px 16px; font-size: 16px; border-radius: 8px; cursor: pointer;">清空画布</button>
+        </div>
+        <div style="position: relative; width: 100%; overflow: hidden; border-radius: 8px; border: 1px solid #ddd;">
+            <canvas id="drawingCanvas" style="width: 100%; height: 500px; display: block; touch-action: none; background-color: #fff; cursor: crosshair;"></canvas>
+        </div>
+        <p style="font-size: 14px; color: #777; margin-top: 12px; text-align: center;">在画布上按住鼠标或触摸拖动即可进行涂鸦创作</p>
+    </article>
+</section>
+
+<style>
+    .tool-btn { opacity: 0.6; transition: opacity 0.2s; }
+    .tool-btn.active { opacity: 1; font-weight: bold; }
+</style>
+
+<script>
+(function() {
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+    const colorPicker = document.getElementById('colorPicker');
+    const sizePicker = document.getElementById('sizePicker');
+    const clearBtn = document.getElementById('clearBtn');
+    const toolBtns = document.querySelectorAll('.tool-btn');
+
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    let currentTool = 'brush';
+    let currentColor = '#000000';
+    let currentSize = 4;
+
+    function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+        };
+    }
+
+    function startDraw(e) {
+        e.preventDefault();
+        isDrawing = true;
+        const pos = getPos(e);
+        lastX = pos.x;
+        lastY = pos.y;
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const pos = getPos(e);
+
+        ctx.strokeStyle = currentTool === 'eraser' ? '#FFFFFF' : currentColor;
+        ctx.lineWidth = currentTool === 'eraser' ? currentSize * 3 : currentSize;
+        
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+
+        lastX = pos.x;
+        lastY = pos.y;
+    }
+
+    function endDraw() {
+        if (isDrawing) {
+            ctx.stroke();
+            isDrawing = false;
+        }
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', endDraw);
+
+    toolBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            toolBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentTool = this.getAttribute('data-tool');
+            canvas.style.cursor = currentTool === 'eraser' ? 'cell' : 'crosshair';
+        });
+    });
+
+    colorPicker.addEventListener('input', function() {
+        currentColor = this.value;
+        if (currentTool === 'eraser') {
+            currentTool = 'brush';
+            toolBtns.forEach(b => b.classList.remove('active'));
+            document.querySelector('[data-tool="brush"]').classList.add('active');
+            canvas.style.cursor = 'crosshair';
+        }
+    });
+
+    sizePicker.addEventListener('input', function() {
+        currentSize = parseInt(this.value, 10);
+    });
+
+    clearBtn.addEventListener('click', function() {
+        const rect = canvas.getBoundingClientRect();
+        ctx.clearRect(0, 0, rect.width, rect.height);
+    });
+})();
+</script>
+
+    </div>
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
