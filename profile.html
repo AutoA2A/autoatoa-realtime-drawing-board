@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户资料</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        nav {
+            background-color: #3498db;
+            color: #fff;
+            padding: 8px 16px;
+            text-align: center;
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline-block;
+            margin-right: 16px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 16px;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+            }
+            nav ul li {
+                display: block;
+                margin-right: 0;
+                padding: 8px 0;
+            }
+        }
+    </style>
+<meta name="description" content="管理账户信息"><meta name="keywords" content="涂鸦,协作,实时,模板,历史记录"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="用户资料"><meta property="og:description" content="管理账户信息"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="用户资料"><meta name="twitter:description" content="管理账户信息"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"用户资料","description":"管理账户信息","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="dashboard.html">仪表盘</a></li>
+            <li><a href="board.html">协作板</a></li>
+            <li><a href="template.html">协作模板</a></li>
+            <li><a href="history.html">历史记录</a></li>
+            <li><a href="profile.html">用户资料</a></li>
+            <li><a href="about.html">关于</a></li>
+            <li><a href="login.html">登录</a></li>
+        </ul>
+    </nav>
+    <header>
+        <h1>实时涂鸦协作板</h1>
+    </header>
+    <div class="container">
+        
+<sectionstyle="margin-bottom:16px;">
+  <h2 style="margin-top:0;">个人信息</h2>
+  <div id="avatarPreview" style="width:80px;height:80px;border-radius:50%;background:#3498db;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:8px;"></div>
+  <input type="file" id="avatarInput" accept="image/png,image/jpeg" style="display:block;margin-bottom:8px;">
+  <label for="username" style="display:block;margin-bottom:4px;">用户名</label>
+  <input type="text" id="username" placeholder="请输入用户名" style="width:100%;padding:8px;border:1px solid #3498db;border-radius:4px;margin-bottom:8px;">
+  <label for="password" style="display:block;margin-bottom:4px;">新密码（留空表示不修改）</label>
+  <input type="password" id="password" placeholder="请输入新密码" style="width:100%;padding:8px;border:1px solid #3498db;border-radius:4px;margin-bottom:8px;">
+  <div style="margin-bottom:8px;">
+    <button id="saveBtn" style="background-color:#3498db;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;">保存修改</button>
+    <button id="logoutBtn" style="background:transparent;color:#3498db;border:2px solid #3498db;border-radius:4px;padding:6px 14px;cursor:pointer;margin-left:8px;">退出登录</button>
+  </div>
+  <div id="msg" style="font-size:14px;color:#333;margin-top:8px;"></div>
+</section>
+<a href="dashboard.html" style="display:inline-block;padding:4px 8px;background-color:#3498db;color:#fff;border-radius:4px;text-decoration:none;font-size:13px;">返回仪表盘</a>
+<script>
+  const STORAGE_KEY = 'user';
+  function loadUser(){ const d=localStorage.getItem(STORAGE_KEY); return d?JSON.parse(d):null; }
+  function saveUser(u){ localStorage.setItem(STORAGE_KEY,JSON.stringify(u)); }
+  function init(){
+    const user=loadUser();
+    if(!user){ location.href='login.html'; return; }
+    document.getElementById('username').value=user.username||'';
+    const avatarPreview=document.getElementById('avatarPreview');
+    if(user.avatar){
+      avatarPreview.style.backgroundImage=`url(${user.avatar})`;
+      avatarPreview.style.backgroundSize='cover';
+      avatarPreview.style.backgroundPosition='center';
+      avatarPreview.innerHTML='';
+    }else{
+      const initials=(user.username?user.username[0]:'U').toUpperCase();
+      avatarPreview.style.backgroundImage='';
+      avatarPreview.innerHTML=initials;
+    }
+  }
+  document.getElementById('avatarInput').addEventListener('change',function(e){
+    const file=e.target.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=function(){
+      const url=reader.result;
+      const preview=document.getElementById('avatarPreview');
+      preview.style.backgroundImage=`url(${url})`;
+      preview.style.backgroundSize='cover';
+      preview.style.backgroundPosition='center';
+      preview.innerHTML='';
+      preview._newAvatar=url;
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('saveBtn').addEventListener('click',function(){
+    const user=loadUser();
+    if(!user) return;
+    const username=document.getElementById('username').value.trim();
+    if(!username){ alert('用户名不能为空'); return; }
+    user.username=username;
+    const password=document.getElementById('password').value;
+    if(password) user.password=password;
+    const avatarInput=document.getElementById('avatarInput');
+    if(avatarInput.files[0]){
+      const reader=new FileReader();
+      reader.onload=function(){
+        user.avatar=reader.result;
+        saveUser(user);
+        document.getElementById('msg').textContent='保存成功';
+      };
+      reader.readAsDataURL(avatarInput.files[0]);
+    }else if(document.getElementById('avatarPreview')._newAvatar){
+      user.avatar=document.getElementById('avatarPreview')._newAvatar;
+      saveUser(user);
+      document.getElementById('msg').textContent='保存成功';
+    }else{
+      saveUser(user);
+      document.getElementById('msg').textContent='保存成功';
+    }
+  });
+  document.getElementById('logoutBtn').addEventListener('click',function(){
+    localStorage.removeItem(STORAGE_KEY);
+    location.href='login.html';
+  });
+  init();
+</script>
+
+    </div>
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
